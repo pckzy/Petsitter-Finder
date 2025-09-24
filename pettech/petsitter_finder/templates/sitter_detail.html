@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}PetSitter Finder - {{ sitter.user.first_name }} {{ sitter.user.last_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <a href="{% url 'home' %}" class="text-xl text-gray-700 font-semibold px-5">← ย้อนกลับ</a>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <div class="flex items-start space-x-6 mb-6">
+                    <div class="w-24 h-24 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center text-3xl text-white font-bold">
+                        {{ sitter.user.first_name|first }}{{ sitter.user.last_name|first }}
+                    </div>
+                    <div class="flex-1">
+                        <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ sitter.user.first_name }} {{ sitter.user.last_name }}</h1>
+                        <p class="text-gray-600 mb-3">📍 {{ sitter.location }}</p>
+                        
+                        <div class="flex items-center mb-3">
+                            <div class="flex text-yellow-400 text-lg">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= avg_rating|floatformat:0 %}
+                                        ⭐
+                                    {% else %}
+                                        ☆
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <span class="ml-2 text-gray-600">{{ avg_rating|floatformat:1 }} ({{ total_reviews }} รีวิว)</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4">
+                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                                ประสบการณ์ {{ sitter.experience_years }} ปี
+                            </span>
+                            {% if sitter.is_available %}
+                                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm flex items-center">
+                                    <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                    พร้อมรับงาน
+                                </span>
+                            {% else %}
+                                <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm flex items-center">
+                                    <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                    ไม่ว่าง
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-3">เกี่ยวกับฉัน</h2>
+                    <p class="text-gray-700 leading-relaxed">{{ sitter.bio }}</p>
+                </div>
+                
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-3">ประเภทสัตว์ที่ดูแลได้</h2>
+                    <div class="flex flex-wrap gap-2">
+                        {% for pet_type in sitter.pet_types.all %}
+                            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
+                                {{ pet_type.icon }} {{ pet_type.name }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
+                <div class="text-center mb-6">
+                    <div class="text-3xl font-bold text-green-600 mb-2">
+                        {{ sitter.hourly_rate_min }} - {{ sitter.hourly_rate_max }} ฿
+                    </div>
+                    <p class="text-gray-500">ต่อชั่วโมง</p>
+                </div>
+                
+                {% if request.session.user_id %}
+                    {% if sitter.is_available %}
+                        <a href="" 
+                           class="w-full bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition font-semibold text-center block mb-4">
+                            📅 จองบริการ
+                        </a>
+                    {% else %}
+                        <div class="w-full bg-gray-300 text-gray-600 py-3 px-6 rounded-lg text-center mb-4 cursor-not-allowed">
+                            ไม่ว่าง
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center mb-4">
+                        <p class="text-gray-600 mb-3">เข้าสู่ระบบเพื่อจองบริการ</p>
+                        <a href="{% url 'login' %}" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">
+                            เข้าสู่ระบบ
+                        </a>
+                    </div>
+                {% endif %}
+                
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">การตอบกลับ:</span>
+                        <span class="text-gray-800">ภายใน 2 ชม.</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">ยกเลิกได้:</span>
+                        <span class="text-gray-800">ก่อน 24 ชม.</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">ประสบการณ์:</span>
+                        <span class="text-gray-800">{{ sitter.experience_years }} ปี</span>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <button class="w-full text-gray-600 hover:text-gray-800 transition text-sm">
+                        📞 ติดต่อพี่เลี้ยง
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

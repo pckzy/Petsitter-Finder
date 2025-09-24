@@ -28,7 +28,7 @@ class LoginView(View):
 class LogoutView(View):
     def get(self, request):
         request.session.flush()
-        return redirect('/home')
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def home(request):
@@ -79,3 +79,12 @@ class RegisterView(View):
             return redirect('/login')
         
         return render(request, 'register.html', {'form': register_form})
+
+
+class SitterView(View):
+    def get(self, request, id):
+        sitter = PetSitter.objects.get(pk=id)
+        return render(request, 'sitter_detail.html', {'sitter': sitter})
+
+    def post(self, request):
+        return render(request, 'sitter_detail.html')
