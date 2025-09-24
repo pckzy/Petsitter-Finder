@@ -12,4 +12,5 @@ urlpatterns = [
     path("sitter_detail/<int:id>", views.SitterView.as_view(), name="sitter"),
     path("booking_form/<int:sitter_id>", views.BookingFormView.as_view(), name="booking_form"),
     path("booking_detail/<int:booking_id>", views.BookingDetailView.as_view(), name="booking_detail"),
+    path('review/create/<int:booking_id>/', views.ReviewCreateView.as_view(), name='review_create'),
 ]

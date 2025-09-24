@@ -69,6 +69,8 @@ def home(request):
     if user_id:
         user = User.objects.get(pk=user_id)
         context['user'] = user
+        bookings = Booking.objects.filter(customer=user)
+        context['bookings'] = bookings
 
     return render(request, 'home.html', context)
 
@@ -91,9 +93,13 @@ class RegisterView(View):
 class SitterView(View):
     def get(self, request, id):
         sitter = PetSitter.objects.get(pk=id)
+        reviews = sitter.reviews.all().order_by('-created_at')[:10]
         request.session['previous_url'] = request.META.get('HTTP_REFERER')
         context = {
-            'sitter': sitter
+            'sitter': sitter,
+            'reviews': reviews,
+            'avg_rating': sitter.average_rating(),
+            'total_reviews': sitter.total_reviews(),
         }
         user_id = request.session.get('user_id')
 
@@ -172,3 +178,47 @@ class BookingDetailView(View):
         
         return render(request, 'booking_detail.html', context)
     
+
+class ReviewCreateView(View):
+    def get(self, request, booking_id):
+        form = ReviewForm()
+        user_id = request.session.get('user_id')
+        user = User.objects.get(pk=user_id)
+        booking = Booking.objects.get(pk=booking_id, customer=user, status='completed')
+
+        context = {
+            'form': form,
+            'booking': booking,
+        }
+        if user_id:
+            context['user'] = user
+
+        if hasattr(booking, 'review'):
+            return render(request, 'booking_detail.html', context)
+
+        return render(request, 'review_form.html', context)
+    
+    def post(self, request, booking_id):
+        form = ReviewForm(request.POST)
+        user_id = request.session.get('user_id')
+        user = User.objects.get(pk=user_id)
+        booking = Booking.objects.get(pk=booking_id, customer=user, status='completed')
+
+        context = {
+            'form': form,
+            'booking': booking,
+        }
+        if user_id:
+            context['user'] = user
+
+        if hasattr(booking, 'review'):
+            return render(request, 'booking_detail.html', context)
+
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.booking = booking
+            review.sitter = booking.sitter
+            review.customer = user
+            review.save()
+
+            return redirect('sitter', id=booking.sitter.id)

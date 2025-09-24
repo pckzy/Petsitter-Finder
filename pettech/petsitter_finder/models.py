@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 class User(models.Model):
@@ -34,6 +35,15 @@ class PetSitter(models.Model):
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
     
+    def average_rating(self):
+        reviews = self.reviews.all()
+        if reviews:
+            return sum([review.rating for review in reviews]) / len(reviews)
+        return 0
+    
+    def total_reviews(self):
+        return self.reviews.count()
+    
 class Booking(models.Model):
     STATUS_CHOICES = [
         ('pending', 'รออนุมัติ'),
@@ -55,3 +65,15 @@ class Booking(models.Model):
     
     def __str__(self):
         return f'{self.customer.first_name} - {self.sitter.user.first_name} ({self.start_date.date()})'
+    
+
+class Review(models.Model):
+    booking = models.OneToOneField(Booking, on_delete=models.CASCADE, related_name='review')
+    sitter = models.ForeignKey(PetSitter, on_delete=models.CASCADE, related_name='reviews')
+    customer = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    comment = models.TextField(verbose_name='ความคิดเห็น')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f'{self.customer.first_name} - {self.sitter.user.first_name} ({self.rating}★)'

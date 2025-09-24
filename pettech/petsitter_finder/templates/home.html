@@ -38,7 +38,7 @@
 </section>
 
 
-<section class="py-16">
+<section class="pt-16">
     <div class="max-w-7xl mx-auto px-4">
         <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">พี่เลี้ยงสัตว์ยอดนิยม</h2>
         
@@ -59,7 +59,7 @@
                         <div class="flex items-center mb-3">
                             <div class="flex text-yellow-400">
                                 {% for i in "12345"|make_list %}
-                                    {% if forloop.counter <= sitter.avg_rating|floatformat:0 %}
+                                    {% if forloop.counter <= sitter.average_rating|floatformat:0|add:"0" %}
                                         ⭐
                                     {% else %}
                                         ☆
@@ -120,4 +120,43 @@
         </div>
     </div>
 </section>
+
+{% if bookings %}
+<section class="py-16">
+    <div class="max-w-7xl mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">ประวัติการจองของคุณ</h2>
+        <div class="overflow-x-auto rounded-xl shadow-lg bg-white">
+            <table class="min-w-full">
+                <thead class="bg-gradient-to-r from-green-600 to-blue-600">
+                <tr>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">ชื่อสัตว์เลี้ยง</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">ราคา</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">สถานะ</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">รายละเอียด</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                {% for booking in bookings %}
+                <tr class="hover:bg-blue-50 transition">
+                    <td class="px-6 py-4 text-gray-700">{{ booking.pet_name }}</td>
+                    <td class="px-6 py-4 text-gray-700">฿{{ booking.total_price }}</td>
+                    <td class="px-6 py-4 text-gray-700">{{ booking.status }}</td>
+                    <td class="px-6 py-4">
+                    <a href="{% url 'booking_detail' booking.id %}" 
+                        class="inline-block bg-yellow-500 text-white text-center py-2 px-4 rounded-full hover:bg-yellow-600 transition">
+                        เพิ่มเติม
+                    </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="px-6 py-4 text-center text-gray-500">ยังไม่มีการจอง</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endif %}
 {% endblock %}

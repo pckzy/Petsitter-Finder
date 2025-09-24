@@ -19,13 +19,15 @@
                         
                         <div class="flex items-center mb-3">
                             <div class="flex text-yellow-400 text-lg">
-                                {% for i in "12345"|make_list %}
-                                    {% if forloop.counter <= avg_rating|floatformat:0 %}
-                                        ⭐
-                                    {% else %}
-                                        ☆
-                                    {% endif %}
-                                {% endfor %}
+                                {% with avg=avg_rating|floatformat:0 %}
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= avg|add:"0" %}
+                                            ⭐
+                                        {% else %}
+                                            ☆
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endwith %}
                             </div>
                             <span class="ml-2 text-gray-600">{{ avg_rating|floatformat:1 }} ({{ total_reviews }} รีวิว)</span>
                         </div>
@@ -64,6 +66,45 @@
                         {% endfor %}
                     </div>
                 </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg p-8 mt-8">
+                <h2 class="text-xl font-semibold mb-6">รีวิวจากลูกค้า</h2>
+                
+                {% if reviews %}
+                    <div class="space-y-6">
+                        {% for review in reviews %}
+                            <div class="border-b border-gray-200 pb-4 last:border-b-0">
+                                <div class="flex items-start space-x-4">
+                                    <div class="w-10 h-10 bg-gradient-to-r from-green-400 to-blue-400 rounded-full flex items-center justify-center text-white font-semibold">
+                                        {{ review.customer.first_name|first }}
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-2">
+                                            <span class="font-medium text-gray-800">{{ review.customer.first_name }}</span>
+                                            <div class="flex text-yellow-400 ml-3">
+                                                {% for i in "12345"|make_list %}
+                                                    {% if forloop.counter <= review.rating %}
+                                                        ⭐
+                                                    {% else %}
+                                                        ☆
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <span class="text-gray-500 text-sm ml-2">{{ review.created_at|date:"d M Y" }}</span>
+                                        </div>
+                                        <p class="text-gray-700">{{ review.comment }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <div class="text-4xl mb-4">💬</div>
+                        <p class="text-gray-500">ยังไม่มีรีวิว</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
         

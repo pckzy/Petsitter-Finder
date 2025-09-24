@@ -120,3 +120,18 @@ class BookingForm(forms.ModelForm):
 
         return cleaned_data
 
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.Select(choices=[(i, f'{i} ดาว') for i in range(1, 6)], attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+            }),
+            'comment': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'rows': 4,
+                'placeholder': 'แบ่งปันประสบการณ์การใช้บริการ...'
+            }),
+        }

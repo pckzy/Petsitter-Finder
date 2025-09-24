@@ -7,7 +7,10 @@
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
         
         <div class="bg-gradient-to-r from-green-500 to-blue-600 text-white p-8">
-            <h1 class="text-3xl font-bold mb-2">การจอง #{{ booking.id }}</h1>
+            <div class="flex justify-between">
+                <h1 class="text-3xl font-bold mb-2">การจอง #{{ booking.id }}</h1>
+                <a href="{% url 'home' %}" class="text-3xl">x</a>
+            </div>
             <div class="flex items-center space-x-4">
                 <span class="px-3 py-1 bg-white bg-opacity-20 rounded-full text-sm text-black">
                     {{ booking.get_status_display }}
@@ -91,7 +94,16 @@
                 </div>
             </div>
             
-            
+            {% if booking.status == 'completed' and not booking.review and user != booking.sitter.user %}
+                <div class="mt-8 p-6 bg-yellow-50 rounded-xl border border-yellow-200">
+                    <h4 class="font-semibold text-yellow-800 mb-2">ให้รีวิวการจองนี้</h4>
+                    <p class="text-yellow-700 mb-4">แบ่งปันประสบการณ์ของคุณเพื่อช่วยเหลือสมาชิกคนอื่น</p>
+                    <a href="{% url 'review_create' booking.id %}" 
+                       class="bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition">
+                        ⭐ เขียนรีวิว
+                    </a>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>

@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}เขียนรีวิว - การจอง #{{ booking.id }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        
+        <div class="bg-gradient-to-r from-yellow-500 to-orange-600 text-white p-8">
+            <h1 class="text-3xl font-bold mb-2">เขียนรีวิว</h1>
+            <p class="opacity-90">แบ่งปันประสบการณ์การใช้บริการของคุณ</p>
+        </div>
+        
+        <div class="p-8">
+            
+            <div class="bg-gray-50 rounded-xl p-6 mb-8">
+                <h3 class="font-semibold mb-4">ข้อมูลการจอง</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-600">พี่เลี้ยง:</span>
+                        <span class="font-medium ml-2">{{ booking.sitter.user.first_name }} {{ booking.sitter.user.last_name }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">วันที่:</span>
+                        <span class="font-medium ml-2">{{ booking.start_date|date:"d M Y" }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">สัตว์เลี้ยง:</span>
+                        <span class="font-medium ml-2">{{ booking.pet_name }} ({{ booking.pet_type.name }})</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">ราคา:</span>
+                        <span class="font-medium ml-2">{{ booking.total_price }} ฿</span>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">ให้คะแนน</label>
+                    {{ form.rating }}
+                    {% if form.rating.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.rating.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">ความคิดเห็น</label>
+                    {{ form.comment }}
+                    {% if form.comment.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.comment.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="bg-blue-50 rounded-xl p-6">
+                    <h4 class="font-semibold text-blue-900 mb-2">แนวทางการเขียนรีวิว</h4>
+                    <ul class="text-blue-800 text-sm space-y-1">
+                        <li>• ประเมินการดูแลสัตว์เลี้ยงของคุณ</li>
+                        <li>• ความน่าเชื่อถือและตรงต่อเวลา</li>
+                        <li>• การสื่อสารและรายงานสถานการณ์</li>
+                        <li>• ความปลอดภัยของสัตว์เลี้ยง</li>
+                        <li>• ความสะอาดและการดูแล</li>
+                    </ul>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button type="submit" class="flex-1 bg-yellow-500 text-white py-3 px-6 rounded-lg hover:bg-yellow-600 transition font-semibold">
+                        ⭐ ส่งรีวิว
+                    </button>
+                    <a href="{% url 'booking_detail' booking.id %}" class="flex-1 bg-gray-500 text-white py-3 px-6 rounded-lg hover:bg-gray-600 transition font-semibold text-center">
+                        ยกเลิก
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
