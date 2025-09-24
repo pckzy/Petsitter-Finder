@@ -5,10 +5,10 @@ class SessionAuthMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        allowed_paths = ['/login', '/register', '/admin', '/static', '/media']
+        allowed_paths = ['/home', '/login', '/register', '/admin', '/static', '/media']
 
         if not request.session.get('user_id') and not any(request.path.startswith(path) for path in allowed_paths):
-            return redirect('/login')
+            return redirect('/home')
 
         response = self.get_response(request)
         return response
