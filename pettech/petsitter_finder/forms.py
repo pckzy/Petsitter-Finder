@@ -1,6 +1,8 @@
 from django import forms
 from .models import *
 from django.core.exceptions import ValidationError
+from django.utils import timezone
+
 import re
 
 class LoginForm(forms.Form):
@@ -63,3 +65,58 @@ class RegisterForm(forms.ModelForm):
             raise ValidationError(errors)
 
         return cleaned_data
+
+
+class BookingForm(forms.ModelForm):
+    class Meta:
+        model = Booking
+        fields = ['start_date', 'end_date', 'pet_name', 'pet_type', 'special_instructions']
+        widgets = {
+            'start_date': forms.DateTimeInput(attrs={
+                'type': 'datetime-local',
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+            }),
+            'end_date': forms.DateTimeInput(attrs={
+                'type': 'datetime-local',
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+            }),
+            'pet_name': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'placeholder': 'ชื่อสัตว์เลี้ยงของคุณ'
+            }),
+            'pet_type': forms.Select(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+            }),
+            'special_instructions': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'rows': 4,
+                'placeholder': 'คำแนะนำพิเศษสำหรับการดูแลสัตว์เลี้ยงของคุณ'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        sitter = kwargs.pop('sitter', None)
+        super().__init__(*args, **kwargs)
+
+        if sitter:
+            self.fields['pet_type'].queryset = sitter.pet_types.all()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start = cleaned_data.get('start_date')
+        end = cleaned_data.get('end_date')
+        now = timezone.now()
+
+        errors = []
+
+        if start and start < now:
+            errors.append(ValidationError("วันเริ่มต้นการจองต้องเป็นเวลาปัจจุบันหรืออนาคต"))
+
+        if start and end and end <= start:
+            errors.append(ValidationError("วันสิ้นสุดการจองต้องอยู่หลังวันเริ่มต้น"))
+
+        if errors:
+            raise ValidationError(errors)
+
+        return cleaned_data
+

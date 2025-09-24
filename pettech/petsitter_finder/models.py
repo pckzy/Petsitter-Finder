@@ -33,3 +33,25 @@ class PetSitter(models.Model):
     
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
+    
+class Booking(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'รออนุมัติ'),
+        ('confirmed', 'ยืนยันแล้ว'),
+        ('completed', 'เสร็จสิ้น'),
+        ('cancelled', 'ยกเลิก'),
+    ]
+    
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
+    sitter = models.ForeignKey(PetSitter, on_delete=models.CASCADE, related_name='bookings')
+    start_date = models.DateTimeField(verbose_name='วันเวลาเริ่มต้น')
+    end_date = models.DateTimeField(verbose_name='วันเวลาสิ้นสุด')
+    pet_name = models.CharField(max_length=50, verbose_name='ชื่อสัตว์เลี้ยง')
+    pet_type = models.ForeignKey(PetType, on_delete=models.CASCADE)
+    special_instructions = models.TextField(blank=True, verbose_name='คำแนะนำพิเศษ')
+    total_price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='ราคารวม')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f'{self.customer.first_name} - {self.sitter.user.first_name} ({self.start_date.date()})'

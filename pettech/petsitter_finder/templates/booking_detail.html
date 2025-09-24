@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}รายละเอียดการจอง #{{ booking.id }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        
+        <div class="bg-gradient-to-r from-green-500 to-blue-600 text-white p-8">
+            <h1 class="text-3xl font-bold mb-2">การจอง #{{ booking.id }}</h1>
+            <div class="flex items-center space-x-4">
+                <span class="px-3 py-1 bg-white bg-opacity-20 rounded-full text-sm text-black">
+                    {{ booking.get_status_display }}
+                </span>
+                <span class="text-sm opacity-90">{{ booking.created_at|date:"d M Y H:i" }}</span>
+            </div>
+        </div>
+        
+        <div class="p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">ข้อมูลการจอง</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">วันเวลาเริ่มต้น:</span>
+                                <span class="font-medium">{{ booking.start_date|date:"d M Y H:i" }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">วันเวลาสิ้นสุด:</span>
+                                <span class="font-medium">{{ booking.end_date|date:"d M Y H:i" }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">ชื่อสัตว์เลี้ยง:</span>
+                                <span class="font-medium">{{ booking.pet_name }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">ประเภทสัตว์:</span>
+                                <span class="font-medium">{{ booking.pet_type.icon }} {{ booking.pet_type.name }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">ราคารวม:</span>
+                                <span class="text-2xl font-bold text-green-600">{{ booking.total_price }} ฿</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if booking.special_instructions %}
+                        <div>
+                            <h4 class="font-semibold mb-2">คำแนะนำพิเศษ</h4>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-gray-700">{{ booking.special_instructions }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">ข้อมูลพี่เลี้ยง</h3>
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-16 h-16 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center text-2xl text-white font-bold">
+                                {{ booking.sitter.user.first_name|first }}{{ booking.sitter.user.last_name|first }}
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold">{{ booking.sitter.user.first_name }} {{ booking.sitter.user.last_name }}</h4>
+                                <p class="text-gray-600">📍 {{ booking.sitter.location }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">ประสบการณ์:</span>
+                                <span>{{ booking.sitter.experience_years }} ปี</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">คะแนน:</span>
+                                <span>{{ booking.sitter.average_rating|floatformat:1 }} ⭐</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <a href="{% url 'sitter' booking.sitter.id %}" 
+                               class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition text-center block">
+                                ดูโปรไฟล์
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

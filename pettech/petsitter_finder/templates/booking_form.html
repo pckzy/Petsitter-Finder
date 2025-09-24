@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}จองบริการ - {{ sitter.user.first_name }} {{ sitter.user.last_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        
+        <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-8">
+            <h1 class="text-3xl font-bold mb-2">จองบริการพี่เลี้ยงสัตว์</h1>
+            <p class="opacity-90">กรอกข้อมูลเพื่อส่งคำขอจอง</p>
+        </div>
+        
+        <div class="p-8">
+            
+            <div class="bg-gray-50 rounded-xl p-6 mb-8">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center text-2xl text-white font-bold">
+                        {{ sitter.user.first_name|first }}{{ sitter.user.last_name|first }}
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold">{{ sitter.user.first_name }} {{ sitter.user.last_name }}</h3>
+                        <p class="text-gray-600">📍 {{ sitter.location }}</p>
+                        <p class="text-green-600 font-semibold">{{ sitter.hourly_rate_min }}-{{ sitter.hourly_rate_max }} ฿/ชม.</p>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">วันเวลาเริ่มต้น</label>
+                        {{ form.start_date }}
+                        {% if form.start_date.errors %}
+                            <div class="text-red-600 text-sm mt-1">{{ form.start_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">วันเวลาสิ้นสุด</label>
+                        {{ form.end_date }}
+                        {% if form.end_date.errors %}
+                            <div class="text-red-600 text-sm mt-1">{{ form.end_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ชื่อสัตว์เลี้ยง</label>
+                        {{ form.pet_name }}
+                        {% if form.pet_name.errors %}
+                            <div class="text-red-600 text-sm mt-1">{{ form.pet_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ประเภทสัตว์</label>
+                        {{ form.pet_type }}
+                        {% if form.pet_type.errors %}
+                            <div class="text-red-600 text-sm mt-1">{{ form.pet_type.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">คำแนะนำพิเศษ</label>
+                    {{ form.special_instructions }}
+                    {% if form.special_instructions.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.special_instructions.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="bg-blue-50 rounded-xl p-6">
+                    <h4 class="font-semibold text-blue-900 mb-2">ข้อมูลการจอง</h4>
+                    <ul class="text-blue-800 text-sm space-y-1">
+                        <li>• ราคาจะคำนวณจากจำนวนชั่วโมงที่ใช้บริการ</li>
+                        <li>• พี่เลี้ยงจะยืนยันการจองภายใน 24 ชั่วโมง</li>
+                        <li>• สามารถยกเลิกได้ก่อนเวลาบริการ 24 ชั่วโมง</li>
+                        <li>• ชำระเงินเมื่อเสร็จสิ้นบริการ</li>
+                    </ul>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button type="submit" class="flex-1 bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition font-semibold">
+                        📅 ส่งคำขอจอง
+                    </button>
+                    <a href="{% url 'home' %}" class="flex-1 bg-gray-500 text-white py-3 px-6 rounded-lg hover:bg-gray-600 transition font-semibold text-center">
+                        ยกเลิก
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

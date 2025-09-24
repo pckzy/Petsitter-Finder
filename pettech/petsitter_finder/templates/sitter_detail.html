@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="max-w-6xl mx-auto px-4 py-8">
-    <a href="{% url 'home' %}" class="text-xl text-gray-700 font-semibold px-5">← ย้อนกลับ</a>
+    <a href="{% url 'back' %}" class="text-xl text-gray-700 font-semibold px-5">← ย้อนกลับ</a>
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         <div class="lg:col-span-2">
@@ -79,7 +79,7 @@
                 
                 {% if request.session.user_id %}
                     {% if sitter.is_available %}
-                        <a href="" 
+                        <a href="{% url 'booking_form' sitter.id %}" 
                            class="w-full bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition font-semibold text-center block mb-4">
                             📅 จองบริการ
                         </a>
