@@ -54,11 +54,9 @@ class RegisterForm(forms.ModelForm):
         errors = []
 
         if username and User.objects.filter(username=username).exists():
-            # self.add_error('username', 'ชื่อผู้ใช้นี้มีอยู่แล้ว กรุณาเลือกชื่ออื่น')
             errors.append(ValidationError("ชื่อผู้ใช้นี้มีอยู่แล้ว กรุณาเลือกชื่ออื่น"))
 
         if phone and not re.match(r'^0\d{9}$', phone):
-            # self.add_error('phone_number', 'กรุณากรอกเบอร์โทรศัพท์ที่ขึ้นต้นด้วย 0 และมีทั้งหมด 10 หลัก')
             errors.append(ValidationError("กรุณากรอกเบอร์โทรศัพท์ 10 หลักให้ถูกต้อง"))
 
         if errors:

@@ -20,7 +20,7 @@
                 </a>
                 
                 <div class="flex items-center space-x-4">
-                    {% if is_login %}
+                    {% if request.session.user_id %}
                         <span class="text-gray-700">สวัสดี, {{ user.first_name }}</span>
                         <a href="{% url 'logout' %}" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
                             ออกจากระบบ
