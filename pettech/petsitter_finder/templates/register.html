@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สมัครสมาชิก - PetSitter Finder</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="relative min-h-screen flex items-center justify-center bg-gradient-to-r from-green-600 to-blue-600 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="absolute inset-0 z-0">
+            <img src="/media/loginbg.gif" alt="" class="w-full h-full object-cover">
+        </div>
+        <div class="absolute max-w-md w-full space-y-8">
+            <div class="bg-white rounded-2xl shadow-2xl p-8">
+                <div class="text-center mb-8">
+                    <div class="text-4xl mb-4">🐾</div>
+                    <h2 class="text-3xl font-bold text-gray-900">สมัครสมาชิก</h2>
+                    <p class="mt-2 text-sm text-gray-600">เข้าร่วม PetSitter Finder</p>
+                </div>
+                
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700">ชื่อ</label>
+                            {{ form.first_name }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700">นามสกุล</label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-gray-700">ชื่อผู้ใช้งาน</label>
+                        {{ form.username }}
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700">เบอร์โทรศัพท์</label>
+                        {{ form.phone_number }}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700">อีเมล</label>
+                        {{ form.email }}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-gray-700">รหัสผ่าน</label>
+                        {{ form.password }}
+                    </div>
+
+                    <div>
+                        <button type="submit" 
+                                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                            สร้างบัญชี
+                        </button>
+                    </div>
+
+                    <div class="text-center">
+                        <p class="text-sm text-gray-600">
+                            มีบัญชีอยู่แล้ว?
+                            <a href="{% url 'login' %}" class="font-medium text-green-600 hover:text-green-500 ml-1">
+                                เข้าสู่ระบบ
+                            </a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

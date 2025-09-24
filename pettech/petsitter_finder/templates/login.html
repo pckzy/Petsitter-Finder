@@ -33,9 +33,9 @@
                     {% csrf_token %}
 
                     {% if form.non_field_errors %}
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                        {{ form.non_field_errors }}
-                    </div>
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                            {{ form.non_field_errors }}
+                        </div>
                     {% endif %}
 
                     <div>
@@ -72,7 +72,7 @@
                     <div class="text-center">
                         <p class="text-sm text-gray-600">
                             ยังไม่มีบัญชี?
-                            <a href="#" class="font-medium text-blue-600 hover:text-blue-500 ml-1">
+                            <a href="{% url 'register' %}" class="font-medium text-blue-600 hover:text-blue-500 ml-1">
                                 สมัครสมาชิก
                             </a>
                         </p>
@@ -82,7 +82,7 @@
                 <div class="mt-6">
 
                     <div class="mt-6">
-                        <a href=""
+                        <a href="{% url 'home' %}"
                             class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition duration-200">
                             <span class="mr-2">🏠</span>
                             กลับหน้าแรก

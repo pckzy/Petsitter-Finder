@@ -22,6 +22,33 @@ class LoginView(View):
         return render(request, 'login.html', {
             'form': user_form
         })
+    
+
+class LogoutView(View):
+    def get(self, request):
+        request.session.flush()
+        return redirect('/home')
+
 
 def home(request):
-    return render(request, 'home.html')
+    is_login = request.session.get('user_id')
+    if is_login:
+        user = User.objects.get(pk=is_login)
+        return render(request, 'home.html', {'is_login': is_login, 'user': user})
+
+    return render(request, 'home.html', {'is_login': is_login})
+
+
+class RegisterView(View):
+    def get(self, request):
+        register_form = RegisterForm(request.POST)
+        return render(request, 'register.html', {'form': register_form})
+
+    def post(self, request):
+        register_form = RegisterForm(request.POST)
+        
+        if register_form.is_valid():
+            register_form.save()
+            return redirect('/login')
+        
+        return render(request, 'register.html', {'form': register_form})
