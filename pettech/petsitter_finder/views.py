@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from django.db.models import Q
+from django.db.models import Q, Avg
 
 from .forms import *
 
@@ -38,7 +38,7 @@ def back(request):
 
 def home(request):
     pet_types = PetType.objects.all()
-    sitters = PetSitter.objects.all()
+    sitters = PetSitter.objects.annotate(avg_rating=Avg('reviews__rating')).order_by('-avg_rating')
     
     search_query = request.GET.get('search', '')
     pet_type = request.GET.get('pet_type', '')
@@ -69,8 +69,20 @@ def home(request):
     if user_id:
         user = User.objects.get(pk=user_id)
         context['user'] = user
-        bookings = Booking.objects.filter(customer=user).order_by('-created_at')[:1]
-        context['bookings'] = bookings
+        if not hasattr(user, 'petsitter'):
+            bookings = Booking.objects.filter(customer=user).order_by('-created_at')[:1]
+            context['bookings'] = bookings
+        else:
+            bookings = Booking.objects.filter(sitter__user=user)
+            stats = {
+                'total': bookings.count(),
+                'pending': bookings.filter(status='pending').count(),
+                'confirmed': bookings.filter(status='confirmed').count(),
+                'completed': bookings.filter(status='completed').count(),
+                'cancelled': bookings.filter(status='cancelled').count(),
+            }
+            context['bookings'] = bookings
+            context['stats'] = stats
 
     return render(request, 'home.html', context)
 
@@ -227,10 +239,14 @@ class ReviewCreateView(View):
 def user_bookings(request):
     user_id = request.session.get('user_id')
     user = User.objects.get(pk=user_id)
-    bookings_list = Booking.objects.filter(
-        customer=user
-    ).select_related('sitter__user', 'pet_type').order_by('-created_at')
-    
+
+    if not hasattr(user, 'petsitter'):
+        bookings_list = Booking.objects.filter(
+            customer=user
+        ).select_related('sitter__user', 'pet_type').order_by('-created_at')
+    else:
+        bookings_list = Booking.objects.filter(sitter__user=user).order_by('-created_at')
+
     stats = {
         'total': bookings_list.count(),
         'pending': bookings_list.filter(status='pending').count(),
@@ -248,9 +264,40 @@ def user_bookings(request):
 
 
 def cancel_booking(request, booking_id):
-    booking = Booking.objects.get(pk=booking_id)
-    booking.status = 'cancelled'
-    booking.save()
+    user_id = request.session.get('user_id')
+    user = User.objects.get(pk=user_id)
 
-    return redirect('user_bookings')
-    # return render(request, 'user_bookings.html', context)
+    booking = Booking.objects.get(pk=booking_id)
+
+    if booking.customer == user or booking.sitter.user == user:
+        booking.status = 'cancelled'
+        booking.save()
+        return redirect('user_bookings')
+
+    return redirect('home')
+
+def accept_booking(request, booking_id):
+    user_id = request.session.get('user_id')
+    user = User.objects.get(pk=user_id)
+
+    booking = Booking.objects.get(pk=booking_id)
+
+    if booking.sitter.user == user:
+        booking.status = 'confirmed'
+        booking.save()
+        return redirect('user_bookings')
+    
+    return redirect('home')
+
+def finish_booking(request, booking_id):
+    user_id = request.session.get('user_id')
+    user = User.objects.get(pk=user_id)
+
+    booking = Booking.objects.get(pk=booking_id)
+
+    if booking.sitter.user == user:
+        booking.status = 'completed'
+        booking.save()
+        return redirect('user_bookings')
+    
+    return redirect('home')

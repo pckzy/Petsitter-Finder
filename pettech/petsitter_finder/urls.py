@@ -15,4 +15,6 @@ urlpatterns = [
     path('review/create/<int:booking_id>/', views.ReviewCreateView.as_view(), name='review_create'),
     path('bookings/', views.user_bookings, name='user_bookings'),
     path('bookings/cancel/<int:booking_id>/', views.cancel_booking, name='cancel'),
+    path('bookings/accept/<int:booking_id>/', views.accept_booking, name='accept'),
+    path('bookings/finish/<int:booking_id>/', views.finish_booking, name='finish'),
 ]

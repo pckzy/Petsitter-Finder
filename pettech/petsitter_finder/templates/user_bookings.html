@@ -9,13 +9,15 @@
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">การจองของฉัน</h1>
-                    <p class="text-gray-600 mt-1">ดูการจองทั้งหมดและจัดการสถานะ</p>
+                    <h1 class="text-3xl font-bold text-gray-900">{% if not user.petsitter %}การจองของฉัน {% else %}คำร้องขอจองถึงคุณ {% endif%}</h1>
+                    <p class="text-gray-600 mt-1">ดู{% if user.petsitter %}คำร้อง{% endif %}การจองทั้งหมดและจัดการสถานะ</p>
                 </div>
-                <a href="{% url 'home' %}" 
-                   class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition font-medium">
-                    🔍 ค้นหาพี่เลี้ยงใหม่
-                </a>
+                {% if not user.petsitter %}
+                    <a href="{% url 'home' %}" 
+                    class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition font-medium">
+                        🔍 ค้นหาพี่เลี้ยงใหม่
+                    </a>
+                    {% endif %}
             </div>
         </div>
 
@@ -90,6 +92,7 @@
                             
                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 
+                                {% if not user.petsitter %}
                                 <div class="bg-gray-50 rounded-xl p-4">
                                     <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
                                         <span class="text-lg mr-2">👤</span>
@@ -109,6 +112,23 @@
                                         ดูโปรไฟล์ →
                                     </a>
                                 </div>
+                                {% else %}
+                                <div class="bg-gray-50 rounded-xl p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                        <span class="text-lg mr-2">👤</span>
+                                        ข้อมูลลูกค้า
+                                    </h4>
+                                    <div class="flex items-center space-x-3 mb-3">
+                                        <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center text-white font-bold">
+                                            {{ booking.customer.user.first_name|first }}{{ booking.customer.user.last_name|first }}
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">{{ booking.customer.first_name }} {{ booking.customer.last_name }}</div>
+                                            <div class="text-sm text-gray-600">📍 {{ booking.sitter.location }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif%}
                                 
                                 
                                 <div class="bg-blue-50 rounded-xl p-4">
@@ -150,10 +170,12 @@
                                                     ✅ รีวิวแล้ว
                                                 </div>
                                             {% else %}
+                                                {% if not user.petsitter %}
                                                 <a href="{% url 'review_create' booking.id %}" 
                                                    class="w-full bg-yellow-500 text-white text-center py-2 px-4 rounded-lg hover:bg-yellow-600 transition block">
                                                     ⭐ เขียนรีวิว
                                                 </a>
+                                                {% endif %}
                                             {% endif %}
                                         {% endif %}
                                         
@@ -161,6 +183,12 @@
                                             <button class="w-full bg-gray-400 text-white text-center py-2 px-4 rounded-lg cursor-not-allowed" disabled>
                                                 รอวันที่นัด
                                             </button>
+                                            {% if user.petsitter %}
+                                            <a href="{% url 'finish' booking.id%}"
+                                                    class="w-full block bg-purple-500 text-white text-center py-2 px-4 rounded-lg hover:bg-purple-600 transition">
+                                                🎉 เสร็จสิ้นการบริการ
+                                            </a>
+                                            {% endif %}
                                         {% endif %}
                                         {% if booking.status == 'cancelled' %}
                                             <button class="w-full bg-gray-400 text-white text-center py-2 px-4 rounded-lg cursor-not-allowed" disabled>
@@ -169,10 +197,21 @@
                                         {% endif %}
                                         
                                         {% if booking.status == 'pending' %}
+                                            {% if not user.petsitter %}
                                             <a href="{% url 'cancel' booking.id%}"
                                                     class="w-full block bg-red-500 text-white text-center py-2 px-4 rounded-lg hover:bg-red-600 transition">
                                                 ❌ ยกเลิกการจอง
                                             </a>
+                                            {% else %}
+                                            <a href="{% url 'accept' booking.id%}"
+                                                    class="w-full block bg-green-700 text-white text-center py-2 px-4 rounded-lg hover:bg-green-800 transition">
+                                                ✅ ยืนยันรับการจอง
+                                            </a>
+                                            <a href="{% url 'cancel' booking.id%}"
+                                                    class="w-full block bg-red-500 text-white text-center py-2 px-4 rounded-lg hover:bg-red-600 transition">
+                                                ❌ ปฏิเสธการจอง
+                                            </a>
+                                            {% endif %}
                                         {% endif %}
                                     </div>
                                 </div>
@@ -181,7 +220,7 @@
                             
                             {% if booking.special_instructions %}
                                 <div class="mt-6 p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
-                                    <h5 class="font-medium text-yellow-900 mb-2">คำแนะนำพิเศษ:</h5>
+                                    <h5 class="font-medium text-yellow-900 mb-2">คำแนะนำพิเศษ{% if user.petsitter %}จากลูกค้า{% else %}จากคุณ{% endif %}:</h5>
                                     <p class="text-yellow-800 text-sm">{{ booking.special_instructions }}</p>
                                 </div>
                             {% endif %}
