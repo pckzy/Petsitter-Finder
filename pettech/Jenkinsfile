@@ -7,7 +7,7 @@ pipeline {
     DOCKER_CREDENTIALS = "docker-hub-credentials-id"
     SSH_CREDENTIALS = "ssh-deploy-key"
     VM_HOST = "sarun_debsirin@34.143.202.105"
-    COMPOSE_PATH = "/home/sarun_debsirin/Petsitter-Finder/docker-compose.yml"
+    COMPOSE_PATH = "/home/sarun_debsirin/Petsitter-Finder/pettech/docker-compose.yml"
   }
 
   stages {

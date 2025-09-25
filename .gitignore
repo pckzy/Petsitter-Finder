@@ -1,7 +1,33 @@
+# Python
 __pycache__/
-*.pyc
-*.sqlite3
+*.py[cod]
+*.log
+
+# Django
 .env
 /staticfiles/
-/node_modules/
+
+# Node / Tailwind (ถ้าใช้ในอนาคต)
+node_modules/
+*.lock
+
+# Virtualenv
 myvenv/
+venv/
+
+# Docker
+*.pid
+*.db
+*.sock
+pgdata/
+
+# Jenkins
+jenkins_data/
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# OS / Misc
+.DS_Store
+Thumbs.db
