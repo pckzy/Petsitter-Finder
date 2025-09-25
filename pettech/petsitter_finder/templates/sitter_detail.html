@@ -119,16 +119,31 @@
                 </div>
                 
                 {% if request.session.user_id %}
-                    {% if sitter.is_available %}
-                        <a href="{% url 'booking_form' sitter.id %}" 
-                           class="w-full bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition font-semibold text-center block mb-4">
-                            📅 จองบริการ
-                        </a>
-                    {% else %}
-                        <div class="w-full bg-gray-300 text-gray-600 py-3 px-6 rounded-lg text-center mb-4 cursor-not-allowed">
-                            ไม่ว่าง
-                        </div>
+                    {% if not user.petsitter %}
+                        {% if sitter.is_available %}
+                            <a href="{% url 'booking_form' sitter.id %}" 
+                            class="w-full bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition font-semibold text-center block mb-4">
+                                📅 จองบริการ
+                            </a>
+                        {% else %}
+                            <div class="w-full bg-gray-300 text-gray-600 py-3 px-6 rounded-lg text-center mb-4 cursor-not-allowed">
+                                ไม่ว่าง
+                            </div>
+                        {% endif %}
                     {% endif %}
+                    {% if sitter.user == user %}
+                        {% if sitter.is_available %}
+                            <a href="{% url 'toggle' sitter.id %}" 
+                            class="w-full bg-red-300 text-white py-3 px-6 rounded-lg hover:bg-red-400 transition font-semibold text-center block mb-4">
+                                📅 ปิดให้บริการ
+                            </a>
+                        {% else %}
+                            <a href="{% url 'toggle' sitter.id %}" 
+                            class="w-full bg-green-700 text-white py-3 px-6 rounded-lg hover:bg-green-800 transition font-semibold text-center block mb-4">
+                                📅 เปิดรับบริการ
+                            </a>
+                        {% endif %}
+                    {% endif%}
                 {% else %}
                     <div class="text-center mb-4">
                         <p class="text-gray-600 mb-3">เข้าสู่ระบบเพื่อจองบริการ</p>

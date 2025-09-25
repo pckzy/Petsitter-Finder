@@ -301,3 +301,15 @@ def finish_booking(request, booking_id):
         return redirect('user_bookings')
     
     return redirect('home')
+
+def toggle_status(request, sitter_id):
+    user_id = request.session.get('user_id')
+    user = User.objects.get(pk=user_id)
+
+    sitter = PetSitter.objects.get(pk=sitter_id)
+    if sitter.user == user:
+        sitter.is_available = not sitter.is_available
+        sitter.save()
+        return redirect('sitter', id=sitter_id)
+
+    return redirect('home')
