@@ -13,7 +13,7 @@ pipeline {
   stages {
     stage('Clone') {
       steps {
-        git 'https://github.com/pckzy/Petsitter-Finder.git'
+        git branch: 'main', url: 'https://github.com/pckzy/Petsitter-Finder.git'
       }
     }
 
