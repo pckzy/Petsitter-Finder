@@ -69,7 +69,7 @@ def home(request):
     if user_id:
         user = User.objects.get(pk=user_id)
         context['user'] = user
-        bookings = Booking.objects.filter(customer=user)
+        bookings = Booking.objects.filter(customer=user).order_by('-created_at')[:1]
         context['bookings'] = bookings
 
     return render(request, 'home.html', context)
@@ -222,3 +222,35 @@ class ReviewCreateView(View):
             review.save()
 
             return redirect('sitter', id=booking.sitter.id)
+
+
+def user_bookings(request):
+    user_id = request.session.get('user_id')
+    user = User.objects.get(pk=user_id)
+    bookings_list = Booking.objects.filter(
+        customer=user
+    ).select_related('sitter__user', 'pet_type').order_by('-created_at')
+    
+    stats = {
+        'total': bookings_list.count(),
+        'pending': bookings_list.filter(status='pending').count(),
+        'confirmed': bookings_list.filter(status='confirmed').count(),
+        'completed': bookings_list.filter(status='completed').count(),
+        'cancelled': bookings_list.filter(status='cancelled').count(),
+    }
+    
+    context = {
+        'bookings': bookings_list,
+        'stats': stats,
+        'user': user
+    }
+    return render(request, 'user_bookings.html', context)
+
+
+def cancel_booking(request, booking_id):
+    booking = Booking.objects.get(pk=booking_id)
+    booking.status = 'cancelled'
+    booking.save()
+
+    return redirect('user_bookings')
+    # return render(request, 'user_bookings.html', context)

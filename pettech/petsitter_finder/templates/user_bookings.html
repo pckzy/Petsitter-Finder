@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block title %}การจองของฉัน - PetSitter Finder{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4">
+        
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">การจองของฉัน</h1>
+                    <p class="text-gray-600 mt-1">ดูการจองทั้งหมดและจัดการสถานะ</p>
+                </div>
+                <a href="{% url 'home' %}" 
+                   class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition font-medium">
+                    🔍 ค้นหาพี่เลี้ยงใหม่
+                </a>
+            </div>
+        </div>
+
+        
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+            <div class="bg-white rounded-lg p-6 shadow-sm border-l-4 border-blue-500">
+                <div class="text-2xl font-bold text-blue-600">{{ stats.total }}</div>
+                <div class="text-sm text-gray-600">ทั้งหมด</div>
+            </div>
+            
+            <div class="bg-white rounded-lg p-6 shadow-sm border-l-4 border-yellow-500">
+                <div class="text-2xl font-bold text-yellow-600">{{ stats.pending }}</div>
+                <div class="text-sm text-gray-600">รออนุมัติ</div>
+            </div>
+            
+            <div class="bg-white rounded-lg p-6 shadow-sm border-l-4 border-green-500">
+                <div class="text-2xl font-bold text-green-600">{{ stats.confirmed }}</div>
+                <div class="text-sm text-gray-600">ยืนยันแล้ว</div>
+            </div>
+            
+            <div class="bg-white rounded-lg p-6 shadow-sm border-l-4 border-purple-500">
+                <div class="text-2xl font-bold text-purple-600">{{ stats.completed }}</div>
+                <div class="text-sm text-gray-600">เสร็จสิ้น</div>
+            </div>
+            
+            <div class="bg-white rounded-lg p-6 shadow-sm border-l-4 border-red-500">
+                <div class="text-2xl font-bold text-red-600">{{ stats.cancelled }}</div>
+                <div class="text-sm text-gray-600">ยกเลิก</div>
+            </div>
+        </div>
+
+        
+        {% if bookings %}
+            <div class="space-y-6">
+                {% for booking in bookings %}
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-6">
+                                
+                                <div>
+                                    <div class="flex items-center space-x-3 mb-2">
+                                        <h3 class="text-lg font-semibold text-gray-900">การจอง #{{ booking.id }}</h3>
+                                        
+                                        
+                                        {% if booking.status == 'pending' %}
+                                            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+                                                ⏳ รออนุมัติ
+                                            </span>
+                                        {% elif booking.status == 'confirmed' %}
+                                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                                                ✅ ยืนยันแล้ว
+                                            </span>
+                                        {% elif booking.status == 'completed' %}
+                                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                                                🏆 เสร็จสิ้น
+                                            </span>
+                                        {% elif booking.status == 'cancelled' %}
+                                            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
+                                                ❌ ยกเลิก
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="text-sm text-gray-500">จองเมื่อ {{ booking.created_at|date:"d M Y H:i" }}</p>
+                                </div>
+                                
+                                
+                                <div class="text-right">
+                                    <div class="text-3xl font-bold text-green-600">{{ booking.total_price }} ฿</div>
+                                    <div class="text-sm text-gray-500">ราคารวม</div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                
+                                <div class="bg-gray-50 rounded-xl p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                        <span class="text-lg mr-2">👤</span>
+                                        ข้อมูลพี่เลี้ยง
+                                    </h4>
+                                    <div class="flex items-center space-x-3 mb-3">
+                                        <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center text-white font-bold">
+                                            {{ booking.sitter.user.first_name|first }}{{ booking.sitter.user.last_name|first }}
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">{{ booking.sitter.user.first_name }} {{ booking.sitter.user.last_name }}</div>
+                                            <div class="text-sm text-gray-600">📍 {{ booking.sitter.location }}</div>
+                                        </div>
+                                    </div>
+                                    <a href="{% url 'sitter' booking.sitter.id %}" 
+                                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                        ดูโปรไฟล์ →
+                                    </a>
+                                </div>
+                                
+                                
+                                <div class="bg-blue-50 rounded-xl p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                        <span class="text-lg mr-2">🐾</span>
+                                        ข้อมูลการดูแล
+                                    </h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div>
+                                            <span class="text-gray-600">สัตว์เลี้ยง:</span>
+                                            <div class="font-medium">{{ booking.pet_type.icon }} {{ booking.pet_name }}</div>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">วันเริ่ม:</span>
+                                            <div class="font-medium">{{ booking.start_date|date:"d M Y H:i" }}</div>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">วันสิ้นสุด:</span>
+                                            <div class="font-medium">{{ booking.end_date|date:"d M Y H:i" }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                
+                                <div class="bg-purple-50 rounded-xl p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                        <span class="text-lg mr-2">⚡</span>
+                                        การดำเนินการ
+                                    </h4>
+                                    <div class="space-y-2">
+                                        <a href="{% url 'booking_detail' booking.id %}" 
+                                           class="w-full bg-blue-500 text-white text-center py-2 px-4 rounded-lg hover:bg-blue-600 transition block">
+                                            📋 ดูรายละเอียด
+                                        </a>
+                                        
+                                        {% if booking.status == 'completed' %}
+                                            {% if booking.review %}
+                                                <div class="w-full bg-green-100 text-green-800 text-center py-2 px-4 rounded-lg text-sm">
+                                                    ✅ รีวิวแล้ว
+                                                </div>
+                                            {% else %}
+                                                <a href="{% url 'review_create' booking.id %}" 
+                                                   class="w-full bg-yellow-500 text-white text-center py-2 px-4 rounded-lg hover:bg-yellow-600 transition block">
+                                                    ⭐ เขียนรีวิว
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+                                        
+                                        {% if booking.status == 'confirmed' %}
+                                            <button class="w-full bg-gray-400 text-white text-center py-2 px-4 rounded-lg cursor-not-allowed" disabled>
+                                                รอวันที่นัด
+                                            </button>
+                                        {% endif %}
+                                        {% if booking.status == 'cancelled' %}
+                                            <button class="w-full bg-gray-400 text-white text-center py-2 px-4 rounded-lg cursor-not-allowed" disabled>
+                                                ยกเลิกแล้ว
+                                            </button>
+                                        {% endif %}
+                                        
+                                        {% if booking.status == 'pending' %}
+                                            <a href="{% url 'cancel' booking.id%}"
+                                                    class="w-full block bg-red-500 text-white text-center py-2 px-4 rounded-lg hover:bg-red-600 transition">
+                                                ❌ ยกเลิกการจอง
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            
+                            {% if booking.special_instructions %}
+                                <div class="mt-6 p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                                    <h5 class="font-medium text-yellow-900 mb-2">คำแนะนำพิเศษ:</h5>
+                                    <p class="text-yellow-800 text-sm">{{ booking.special_instructions }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+        {% else %}
+        
+            <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
+                {% if status_filter %}
+                    <div class="text-6xl mb-6">🔍</div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">ไม่พบการจองที่ตรงกับเงื่อนไข</h3>
+                    <p class="text-gray-600 mb-6">ลองเปลี่ยนการกรองหรือดูการจองทั้งหมด</p>
+                    <a href="{% url 'user_bookings' %}" 
+                       class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition font-medium">
+                        ดูการจองทั้งหมด
+                    </a>
+                {% else %}
+                    <div class="text-6xl mb-6">📋</div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">ยังไม่มีการจอง</h3>
+                    <p class="text-gray-600 mb-6">เริ่มต้นการใช้งานด้วยการจองพี่เลี้ยงสัตว์คนแรกของคุณ</p>
+                    <a href="{% url 'home' %}" 
+                       class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition font-medium">
+                        🔍 ค้นหาพี่เลี้ยงสัตว์
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
