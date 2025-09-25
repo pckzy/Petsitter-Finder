@@ -52,6 +52,8 @@ pipeline {
         sshagent(credentials: [SSH_CREDENTIALS]) {
           sh """
             ssh -o StrictHostKeyChecking=no $VM_HOST '
+              cd /home/sarun_debsirin/Petsitter-Finder &&
+              git pull origin main &&
               docker pull $IMAGE_NAME:$TAG &&
               docker compose -f $COMPOSE_PATH up -d --remove-orphans &&
               docker exec petsitter_web python manage.py migrate
