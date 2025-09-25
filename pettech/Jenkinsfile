@@ -1,0 +1,57 @@
+pipeline {
+  agent any
+
+  environment {
+    IMAGE_NAME = "pckzy/petsitter-finder"
+    TAG = "latest"
+    DOCKER_CREDENTIALS = "docker-hub-credentials-id"
+    SSH_CREDENTIALS = "ssh-deploy-key"
+    VM_HOST = "sarun_debsirin@34.143.202.105"
+    COMPOSE_PATH = "/home/sarun_debsirin/Petsitter-Finder/docker-compose.yml"
+  }
+
+  stages {
+    stage('Clone') {
+      steps {
+        git 'https://github.com/pckzy/Petsitter-Finder.git'
+      }
+    }
+
+    stage('Test') {
+      steps {
+        sh 'pip install -r requirements.txt'
+        sh 'python manage.py test'
+      }
+    }
+
+    stage('Build Docker Image') {
+      steps {
+        sh "docker build -t $IMAGE_NAME:$TAG ."
+      }
+    }
+
+    stage('Push to Docker Hub') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+          sh """
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+            docker push $IMAGE_NAME:$TAG
+          """
+        }
+      }
+    }
+
+    stage('Deploy to VM') {
+      steps {
+        sshagent(credentials: [SSH_CREDENTIALS]) {
+          sh """
+            ssh -o StrictHostKeyChecking=no $VM_HOST '
+              docker pull $IMAGE_NAME:$TAG &&
+              docker-compose -f $COMPOSE_PATH up -d --remove-orphans
+            '
+          """
+        }
+      }
+    }
+  }
+}
