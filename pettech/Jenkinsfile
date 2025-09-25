@@ -53,7 +53,8 @@ pipeline {
           sh """
             ssh -o StrictHostKeyChecking=no $VM_HOST '
               docker pull $IMAGE_NAME:$TAG &&
-              docker compose -f $COMPOSE_PATH up -d --remove-orphans
+              docker compose -f $COMPOSE_PATH up -d --remove-orphans &&
+              docker exec petsitter_web python manage.py migrate
             '
           """
         }
