@@ -1,14 +1,32 @@
 version: '3.8'
 
 services:
-  web:
+  web1:
     image: pckzy/petsitter-finder:latest
-    container_name: petsitter_web
+    container_name: petsitter_web1
     command: gunicorn pettech.wsgi:application --bind 0.0.0.0:8000 --workers=2 --threads=2 --timeout=60
     env_file:
       - .env
+    environment:
+      - CONTAINER_NAME=web1
     ports:
-      - "8000:8000"
+      - "8001:8000"
+    depends_on:
+      - db
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+
+  web2:
+    image: pckzy/petsitter-finder:latest
+    container_name: petsitter_web2
+    command: gunicorn pettech.wsgi:application --bind 0.0.0.0:8000 --workers=2 --threads=2 --timeout=60
+    env_file:
+      - .env
+    environment:
+      - CONTAINER_NAME=web2
+    ports:
+      - "8002:8000"
     depends_on:
       - db
     volumes:
@@ -26,7 +44,8 @@ services:
       - media_volume:/app/media:ro
 
     depends_on:
-      - web
+      - web1
+      - web2
     restart: always
 
   db:

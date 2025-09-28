@@ -6,6 +6,18 @@ from .forms import *
 
 from decimal import Decimal
 
+import os
+from django.http import HttpResponse
+import logging
+
+logger = logging.getLogger(__name__)
+
+def index(request):
+    name = os.getenv("CONTAINER_NAME", "unknown")
+    logger.info(f"🔔 Request handled by {name}")
+    return HttpResponse(f"Hello from {name}")
+
+
 # Create your views here.
 class LoginView(View):
     def get(self, request):
