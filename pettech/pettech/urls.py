@@ -20,13 +20,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 from petsitter_finder.views import *
 from django.views.static import serve
-from django_prometheus import exports
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("petsitter_finder.urls")),
-    path("metrics/", exports.ExportToDjangoView.as_view()),
+    path('metrics/', include('django_prometheus.urls')),
 ]
 
 if settings.DEBUG:
