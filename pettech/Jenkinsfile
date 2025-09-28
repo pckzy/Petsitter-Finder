@@ -47,6 +47,8 @@ pipeline {
           DB_PORT=5432
           SECRET_KEY=$DJANGO_SECRET_KEY
           DEBUG=False
+          STATIC_ROOT=/app/static
+          MEDIA_ROOT=/app/media
         """
       }
     }
