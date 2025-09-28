@@ -27,6 +27,7 @@ services:
 
     depends_on:
       - web
+    restart: always
 
   db:
     image: postgres:15
