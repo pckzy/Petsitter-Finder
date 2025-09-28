@@ -7,8 +7,8 @@ services:
     command: gunicorn pettech.wsgi:application --bind 0.0.0.0:8000 --workers=2 --threads=2 --timeout=60
     env_file:
       - .env
-    expose:
-      - "8000"
+    ports:
+      - "8000:8000"
     depends_on:
       - db
     volumes:
