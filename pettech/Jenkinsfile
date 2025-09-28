@@ -5,7 +5,7 @@ pipeline {
     IMAGE_NAME = "pckzy/petsitter-finder"
     TAG = "latest"
     DOCKER_CREDENTIALS = "docker-hub-credentials-id"
-    COMPOSE_PATH = "/home/sarun_debsirin/Petsitter-Finder/pettech/docker-compose.yml"
+    // COMPOSE_PATH = "/home/sarun_debsirin/Petsitter-Finder/pettech/docker-compose.yml"
   }
 
   stages {
@@ -36,9 +36,9 @@ pipeline {
     stage('Deploy Local') {
       steps {
         sh """
-          cd /home/sarun_debsirin/Petsitter-Finder &&
+          cd $WORKSPACE &&
           git pull origin main &&
-          docker compose -f $COMPOSE_PATH up -d --remove-orphans &&
+          docker compose -f pettech/docker-compose.yml up -d --remove-orphans &&
           docker exec petsitter_web python manage.py migrate
         """
       }
