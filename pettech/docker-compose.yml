@@ -42,7 +42,7 @@ services:
     image: prom/prometheus
     container_name: petsitter_prometheus
     volumes:
-      - ./pettech/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
 
