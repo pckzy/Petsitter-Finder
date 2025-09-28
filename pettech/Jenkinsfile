@@ -5,6 +5,10 @@ pipeline {
     IMAGE_NAME = "pckzy/petsitter-finder"
     TAG = "latest"
     DOCKER_CREDENTIALS = "docker-hub-credentials-id"
+    DB_NAME = credentials('db-name-id')
+    DB_USER = credentials('db-user-id')
+    DB_PASSWORD = credentials('db-password-id')
+    DJANGO_SECRET_KEY = credentials('django-secret-key-id')
     // COMPOSE_PATH = "/home/sarun_debsirin/Petsitter-Finder/pettech/docker-compose.yml"
   }
 
@@ -33,12 +37,26 @@ pipeline {
       }
     }
 
+    stage('Create .env') {
+      steps {
+        writeFile file: 'pettech/.env', text: """
+          DB_NAME=$DB_NAME
+          DB_USER=$DB_USER
+          DB_PASSWORD=$DB_PASSWORD
+          DB_HOST=db
+          DB_PORT=5432
+          SECRET_KEY=$DJANGO_SECRET_KEY
+          DEBUG=False
+        """
+      }
+    }
+
     stage('Deploy Local') {
       steps {
         sh """
           cd $WORKSPACE &&
           git pull origin main &&
-          docker compose -f pettech/docker-compose.yml up -d --remove-orphans &&
+          docker compose --env-file pettech/.env -f pettech/docker-compose.yml up -d --remove-orphans &&
           docker exec petsitter_web python manage.py migrate
         """
       }
