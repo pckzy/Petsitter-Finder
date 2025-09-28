@@ -12,8 +12,8 @@ scrape_configs:
 
   - job_name: 'django'
     static_configs:
-      - targets: ['web:8000']
+      - targets: ['petsitter_web:8000']
 
   - job_name: 'node'
     static_configs:
-      - targets: ['node_exporter:9100']
+      - targets: ['petsitter_node_exporter:9100']
