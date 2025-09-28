@@ -18,5 +18,4 @@ urlpatterns = [
     path('bookings/accept/<int:booking_id>/', views.accept_booking, name='accept'),
     path('bookings/finish/<int:booking_id>/', views.finish_booking, name='finish'),
     path('toggle/<int:sitter_id>/', views.toggle_status, name='toggle'),
-    path('test/', views.index, name='index')
 ]
