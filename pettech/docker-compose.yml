@@ -4,13 +4,29 @@ services:
   web:
     image: pckzy/petsitter-finder:latest
     container_name: petsitter_web
-    command: gunicorn pettech.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn pettech.wsgi:application --bind 0.0.0.0:8000 --workers=2 --threads=2 --timeout=60
     env_file:
       - .env
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     depends_on:
       - db
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+
+  nginx:
+    image: nginx:latest
+    container_name: petsitter_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/app/static:ro
+      - media_volume:/app/media:ro
+
+    depends_on:
+      - web
 
   db:
     image: postgres:15
@@ -22,5 +38,23 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  prometheus:
+    image: prom/prometheus
+    container_name: petsitter_prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana
+    container_name: petsitter_grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
 volumes:
   pgdata:
+  static_volume:
+  media_volume:
