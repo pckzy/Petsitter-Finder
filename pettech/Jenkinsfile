@@ -5,8 +5,6 @@ pipeline {
     IMAGE_NAME = "pckzy/petsitter-finder"
     TAG = "latest"
     DOCKER_CREDENTIALS = "docker-hub-credentials-id"
-    SSH_CREDENTIALS = "ssh-deploy-key"
-    VM_HOST = "sarun_debsirin@34.143.202.105"
     COMPOSE_PATH = "/home/sarun_debsirin/Petsitter-Finder/pettech/docker-compose.yml"
   }
 
@@ -16,18 +14,6 @@ pipeline {
         git branch: 'main', url: 'https://github.com/pckzy/Petsitter-Finder.git'
       }
     }
-
-    // stage('Test') {
-    //   steps {
-    //     sh '''
-    //     cd pettech
-    //     python3 -m venv venv
-    //     . venv/bin/activate
-    //     pip install -r requirements.txt
-    //     python manage.py test
-    //     '''
-    //   }
-    // }
 
     stage('Build Docker Image') {
       steps {
@@ -47,19 +33,14 @@ pipeline {
       }
     }
 
-    stage('Deploy to VM') {
+    stage('Deploy Local') {
       steps {
-        sshagent(credentials: [SSH_CREDENTIALS]) {
-          sh """
-            ssh -o StrictHostKeyChecking=no $VM_HOST '
-              cd /home/sarun_debsirin/Petsitter-Finder &&
-              git pull origin main &&
-              docker pull $IMAGE_NAME:$TAG &&
-              docker compose -f $COMPOSE_PATH up -d --remove-orphans &&
-              docker exec petsitter_web python manage.py migrate
-            '
-          """
-        }
+        sh """
+          cd /home/sarun_debsirin/Petsitter-Finder &&
+          git pull origin main &&
+          docker compose -f $COMPOSE_PATH up -d --remove-orphans &&
+          docker exec petsitter_web python manage.py migrate
+        """
       }
     }
   }
