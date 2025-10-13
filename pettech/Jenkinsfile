@@ -9,7 +9,6 @@ pipeline {
     DB_USER = credentials('db-user-id')
     DB_PASSWORD = credentials('db-password-id')
     DJANGO_SECRET_KEY = credentials('django-secret-key-id')
-    // COMPOSE_PATH = "/home/sarun_debsirin/Petsitter-Finder/pettech/docker-compose.yml"
   }
 
   stages {
